@@ -5,11 +5,13 @@ export default defineConfig({
   title: "await-docs",
   titleTemplate: "welcome!",
   description: "front-web docs",
+  lastUpdated:true,
   themeConfig: {
     logo:'/logo.png',
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: '主页', link: '/' },
+      {text:'个人生活',link:''},
       { text: 'TypeScript笔记', link: '/typescript-docs/基础类型' },
       {
         text: '构建工具', items: [
@@ -21,9 +23,39 @@ export default defineConfig({
             link: '/bundle-tool-docs/webpack/index'
           }
         ]
+      },{
+        text:'NodeJS笔记',
+        link:''
+      },{
+        text:'JavaScript',
+        items:[
+          {
+            text:'函数式编程',
+            link:'/bundle-tool-docs/vite/index'
+          },{
+            text:'JS基础',
+            link:'/bundle-tool-docs/webpack/index'
+          }
+        ]
+      },{
+        text:'VUE',
+        items:[
+          {
+            text:'Vue技巧',
+            link:'/bundle-tool-docs/vite/index'
+          },{
+            text:'Vue原理',
+            link:'/bundle-tool-docs/vite/index'
+          }
+        ]
+      },{
+        text:'性能优化',
+        link:''
+      },{
+        text:'业务场景',
+        link:''
       }
     ],
-
     sidebar: {
       '/typescript-docs/': [
         {
@@ -94,8 +126,15 @@ export default defineConfig({
         }
       ]
     },
+    footer:{
+      message:'冷的咖啡，我庆幸着，你在续杯',
+      copyright:'Copyright @ 2023 made by await!'
+    },
     socialLinks: [
       { icon: 'github', link: 'https://github.com/xqnjkycx' }
-    ]
+    ],
+    search:{
+      provider:'local'
+    }
   }
 })

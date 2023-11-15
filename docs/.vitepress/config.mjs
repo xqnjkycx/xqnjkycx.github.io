@@ -5,7 +5,6 @@ export default defineConfig({
   title: "await-docs",
   titleTemplate: "welcome!",
   description: "front-web docs",
-  base:'xqnjkycx',
   themeConfig: {
     logo:'/logo.png',
     // https://vitepress.dev/reference/default-theme-config

@@ -51,7 +51,45 @@ export default defineConfig({
             {
               text: 'webpack',
               link: 'bundle-tool-docs/webpack/index'
+            }, 
+          ]
+        },
+      ],
+      '/project-docs/NexSight/':[
+        {
+          text:'NexSight AI标注缺陷检测系统',
+          items:[
+            {
+              text:'项目简介',
+              link:'project-docs/NexSight/项目简介.md'
+            },{
+              text:'项目结构',
+              link:'project-docs/NexSight/项目结构.md'
+            },{
+              text:'项目基本配置',
+              link:'project-docs/NexSight/项目基本配置.md'
+            },{
+              text:'核心模块',
+              link:'project-docs/NexSight/核心模块.md'
+            },{
+              text:'项目优化',
+              link:'project-docs/NexSight/项目优化.md'
+            },{
+              text:'其他细节',
+              link:'project-docs/NexSight/其他细节.md'
             }
+          ]
+        }
+      ],
+      '/project-docs/VitePress/':[
+        {
+          text:'快速搭建一个个人博客',
+          items:[
+            {
+              text:'VitePress搭建',
+              link:'project-docs/VitePress/VitePress博客.md'
+            }
+
           ]
         }
       ]

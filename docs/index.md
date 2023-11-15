@@ -11,10 +11,10 @@ hero:
   actions:
     - theme: brand
       text: NexSight项目总结
-      link: /markdown-examples
+      link: /project-docs/NexSight/项目简介.md
     - theme: alt
-      text: 后台管理系统项目总结
-      link: /api-examples
+      text: VitePress博客快速搭建
+      link: /project-docs/VitePress/VitePress博客.md
 
 features:
   - title: 学习笔记🚀

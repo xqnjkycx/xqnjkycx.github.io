@@ -3,9 +3,10 @@ import { defineConfig } from 'vitepress'
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   title: "await-docs",
-  titleTemplate: "Vite & Vue powered static generator",
+  titleTemplate: "welcome!",
   description: "front-web docs",
   themeConfig: {
+    logo:'/logo.png',
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: '主页', link: '/' },

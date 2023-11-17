@@ -20,7 +20,7 @@ export default defineConfig({
         link: ''
       }, {
         text: 'NodeJS笔记',
-        link: ''
+        link: '/nodejs-docs/深入浅出NodeJS'
       }, {
         text: 'JavaScript',
         items: [

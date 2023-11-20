@@ -59,7 +59,7 @@ export default defineConfig({
         items:[
           {
             text:'shader入门',
-            link:'/bundle-tool-docs/webpack/index'
+            link:'/webgl-docs/shader/学习shader的准备工作.md'
           }
         ]
       }

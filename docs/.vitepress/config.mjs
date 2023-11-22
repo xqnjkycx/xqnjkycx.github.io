@@ -132,6 +132,19 @@ export default defineConfig({
 
           ]
         }
+      ],
+      '/webgl-docs/shader':[
+        {
+          items:[
+            {
+              text:'学习Shader的准备工作',
+              link:'webgl-docs/shader/学习shader的准备工作.md'
+            },{
+              text:'你懂GLSL吗？',
+              link:'webgl-docs/shader/GLSL语法入门.md'
+            }
+          ]
+        }
       ]
     },
     footer: {

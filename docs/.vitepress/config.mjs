@@ -142,6 +142,9 @@ export default defineConfig({
             },{
               text:'你懂GLSL吗？',
               link:'webgl-docs/shader/GLSL语法入门.md'
+            },{
+              text:'绘图高手uv',
+              link:'webgl-docs/shader/uv绘图.md'
             }
           ]
         }

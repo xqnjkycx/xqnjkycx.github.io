@@ -250,3 +250,96 @@ uv=rotate(uv,PI/2.);
 ![image](./assets/旋转三角形.png)
 
 ### 重复
+像实现重复，就需要使用到一个新的内置函数`fract`，它的作用是获取一个数的小数部分。
+比如`fract(114.514)`，返回的值就是`0.514`。
+
+它之所以能实现重复就在于比如`(+1.3, +1.3)`,`(-1.3, +1.3)`,`(-1.3, -1.3)`,`(+1.3, -1.3)`这四个处在不同象限的点，通过`fract`函数都被处理成了一个点坐标`(0.3,0.3)`
+
+比如下面的这段代码
+```glsl
+void mainImage(out vec4 fragColor,in vec2 fragCoord){
+    vec2 uv=fragCoord/iResolution.xy;
+    
+    uv=fract(uv*vec2(2.,2.));
+    
+    uv=(uv-.5)*2.;
+    uv.x*=iResolution.x/iResolution.y;
+    uv*=vec2(2.,2.);
+    
+    float d=sdEquilateralTriangle(uv,.5);
+    float c=smoothstep(0.,.02,d);
+    fragColor=vec4(vec3(c),1.);
+}
+
+
+```
+最后实现的效果如下
+![四个重复三角形](./assets/四个重复三角形.png)
+
+### 镜像
+`abs`内置函数可以获取一个数的绝对值从而实现镜像，使用`uv.y=abs(uv.y)`实现关于x轴对称镜像，使用`uv.x=abs(uv.x)`实现关于y轴对称镜像。
+
+代码如下：
+```glsl
+void mainImage(out vec4 fragColor,in vec2 fragCoord){
+    vec2 uv=fragCoord/iResolution.xy;
+    uv=(uv-.5)*2.;
+
+    uv.y=abs(uv.y);
+    
+    uv.x*=iResolution.x/iResolution.y;
+    uv*=vec2(2.,2.);
+    
+    float d=sdEquilateralTriangle(uv,.5);
+    float c=smoothstep(0.,.02,d);
+    fragColor=vec4(vec3(c),1.);
+}
+```
+![四个重复三角形](./assets/镜像三角形.png)
+
+## SDF图形变换
+除了UV以外，`SDF`本身的形状也是可以改变的，这些形变函数在`iq`的博客上也有提供，可以直接复制粘贴过来。
+
+下面只给出一些代码和说明，不给具体图例，效果自己可以粘去看一下~
+
+```glsl
+float opRound(in float d,in float r)
+{
+    return d-r;
+}
+// 圆角
+d = opRound(d,.1)
+
+
+float opOnion(in float d,in float r)
+{
+    return abs(d)-r;
+}
+// 镂空
+d = opOnion(d,.1)
+
+```
+
+## SDF 布尔运算
+`SDF`函数本身能绘制出很多形状，但数量也是有限的，比如说你想画个星形，可以用这个形状所对应的函数sdStar来实现，但是如果要画一个笑脸的形状就比较困难了。但是只要把几个圆形和一条弯曲的曲线组合在一起，也能画出笑脸。
+
+这就需要使用到`SDF`的三种运算方式：并`(Union)`，交`(Intersection)`，差`(Subtraction)`。
+
+这三个函数我这边直接列举出来先：
+```glsl
+float opUnion(float d1,float d2)
+{
+    return min(d1,d2);
+}
+
+float opIntersection(float d1,float d2)
+{
+    return max(d1,d2);
+}
+
+float opSubtraction(float d1,float d2)
+{
+    return max(-d1,d2);
+}
+
+```

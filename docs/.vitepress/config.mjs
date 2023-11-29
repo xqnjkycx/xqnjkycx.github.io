@@ -10,7 +10,6 @@ export default defineConfig({
     logo: '/logo.png',
     nav: [
       { text: '主页', link: '/' },
-      { text: '个人生活', link: '' },
       { text: 'TypeScript笔记', link: '/typescript-docs/基础类型' },
       {
         text: '性能优化',

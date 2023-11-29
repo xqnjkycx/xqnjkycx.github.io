@@ -326,6 +326,7 @@ d = opOnion(d,.1)
 这就需要使用到`SDF`的三种运算方式：并`(Union)`，交`(Intersection)`，差`(Subtraction)`。
 
 这三个函数我这边直接列举出来先：
+
 ```glsl
 float opUnion(float d1,float d2)
 {
@@ -341,5 +342,238 @@ float opSubtraction(float d1,float d2)
 {
     return max(-d1,d2);
 }
+```
+现在创建2个`SDF`图形：
+
+这里选择圆形和矩形来做并集
+```glsl
+void mainImage(out vec4 fragColor,in vec2 fragCoord){
+    vec2 uv=fragCoord/iResolution.xy;
+    uv=(uv-.5)*2.;
+    uv.x*=iResolution.x/iResolution.y;
+    
+    float d1=sdfCircle(uv,.5);
+    float d2=sdfRect(uv,vec2(.6,.3));
+    
+    // 并集
+    float d=opUnion(d1,d2);
+    
+    float c=smoothstep(0.,.02,d);
+    fragColor=vec4(vec3(c),1.);
+}
+```
+结果如下：
+![image](./assets/圆矩并.png)
+
+做交集
+```glsl
+void mainImage(out vec4 fragColor,in vec2 fragCoord){
+    vec2 uv=fragCoord/iResolution.xy;
+    uv=(uv-.5)*2.;
+    uv.x*=iResolution.x/iResolution.y;
+    
+    float d1=sdfCircle(uv,.5);
+    float d2=sdfRect(uv,vec2(.6,.3));
+    
+    float d=opIntersection(d1,d2);
+    
+    float c=smoothstep(0.,.02,d);
+    fragColor=vec4(vec3(c),1.);
+}
+```
+结果如下：
+![image](./assets/圆矩交.png)
+
+做差集,这是长方形减去圆形
+```glsl
+void mainImage(out vec4 fragColor,in vec2 fragCoord){
+    vec2 uv=fragCoord/iResolution.xy;
+    uv=(uv-.5)*2.;
+    uv.x*=iResolution.x/iResolution.y;
+    
+    float d1=sdfCircle(uv,.5);
+    float d2=sdfRect(uv,vec2(.6,.3));
+    
+    float d=opSubtraction(d1,d2);
+    
+    float c=smoothstep(0.,.02,d);
+    fragColor=vec4(vec3(c),1.);
+}
+```
+结果如下：
+![image](./assets/圆矩差.png)
+
+你也可以试一试，使用圆形减去长方形，`float d = opSubtraction(d2,d1)`。
+
+### 平滑版
+布尔运算还有另一种版本：平滑版(`smooth`)，这里提供实现函数，具体的效果可以复制到代码上然后看效果，这里不再给图示例
+```glsl
+float opSmoothUnion(float d1,float d2,float k){
+    float h=clamp(.5+.5*(d2-d1)/k,0.,1.);
+    return mix(d2,d1,h)-k*h*(1.-h);
+}
+
+float opSmoothSubtraction(float d1,float d2,float k){
+    float h=clamp(.5-.5*(d2+d1)/k,0.,1.);
+    return mix(d2,-d1,h)+k*h*(1.-h);
+}
+
+float opSmoothIntersection(float d1,float d2,float k){
+    float h=clamp(.5-.5*(d2-d1)/k,0.,1.);
+    return mix(d2,d1,h)+k*h*(1.-h);
+}
+```
+比起一般的布尔运算，其实还多了一个平滑度`k`参数，它能控制平滑度。使用方式为`d=opSmoothUnion(d1,d2,.1);`
+
+## mix函数
+mix函数也是glsl的内置函数，称为混合函数，它的实现公式为：
+```glsl
+#define mix(x,y,t) x*(1.-t)+y*t
+```
+它接受3个参数：前2个参数`x`和`y`分别对应2个值，最后一个参数`t`代表混合程度，如果`t`为0，则值就等于`x`；如果`t`为1，则值就等于`y`，如果`t`为0到1内的值，就值等于`x`与`y`之间逐渐变化的值。
+
+它的作用一般如下：
+
+### 创建渐变色
+```glsl
+void mainImage(out vec4 fragColor,in vec2 fragCoord){
+    vec2 uv = fragCoord/iResolution.xy;
+
+    vec3 col1=vec3(1.,0.,0.);
+    vec3 col2=vec3(0.,1.,0.);
+    vec3 col = mix(col1,col2,uv.x);
+    fragColor=vec4(col,1.);
+}
+```
+这里指定了两个颜色`col1`和`col2`，用`mix`函数将其混合起来，混合程度就使用uv坐标`x`轴作为参数。
+![image](./assets/红绿mix.png)
+
+### 给图形染色
+根据之前`SDF`函数的意义：在形状外的距离为正数+，在形状内的距离为负数-。这里定义两个颜色`colInner`和`colOuter`，分别代表形状内部和外部的颜色，再使用`mix`函数将它们混合起来，混合程度就用`SDF`函数经平滑后的结果。
+
+![image](./assets/红色rect.png)
+
+### 形状转变效果
+`mix`函数不仅可以混合颜色，也可以混合别的东西。比如形状，主要是纬度相同的2个值都可以拿来混合。
+
+尝试创建2个`SDF`图形，将它们的形状用`mix`函数混合起来，混合程度就用随着时间变化的`iTime`变量，外面包了2层函数：`sin`函数负责周期性变化，`abs`函数负责确保混合程度的值是正的。
+
+```glsl
+uv=(uv-.5)*2.;
+uv.x*=iResolution.x/iResolution.y;
+
+float d1=sdCircle(uv,.5);
+float d2=sdBox(uv,vec2(.6,.3));
+float d=mix(d1,d2,abs(sin(iTime)));
+float c=smoothstep(0.,.02,d);
+fragColor=vec4(vec3(c),1.);
 
 ```
+
+## 重复图案
+上文uv变换那部分，学到了用`fract`函数来实现“重复”的操作，利用这一点，就可以创建出很多其他的常见重复图案。
+
+### 条纹
+先用`step`函数绘制一根线条（简单来说就是靠右的那一块颜色）
+```glsl
+void mainImage(out vec4 fragColor,in vec2 fragCoord){
+    vec2 uv=fragCoord/iResolution.xy;
+    
+    uv=(uv-.5)*2.;
+    uv.x*=iResolution.x/iResolution.y;
+    uv=fract(uv*16.);
+
+    vec3 c=vec3(step(.5,uv.x));
+    fragColor=vec4(c,1.);
+}
+```
+![image](./assets/重复条纹.png)
+
+### 波浪
+```glsl
+void mainImage(out vec4 fragColor,in vec2 fragCoord){
+    vec2 uv=fragCoord/iResolution.xy;
+    
+    uv=(uv-.5)*2.;
+    uv.x*=iResolution.x/iResolution.y;
+    uv.y+=sin(uv.x*6.)*.4;
+    uv=fract(uv*16.);
+    vec3 c=vec3(step(.5,uv.y));
+    
+    fragColor=vec4(c,1.);
+}
+```
+最后得到的结果如下：
+![image](./assets/波浪条纹.png)
+
+### 网格
+网格可以看作是两个条纹叠加的形状
+```glsl
+void mainImage(out vec4 fragColor,in vec2 fragCoord){
+    vec2 uv=fragCoord/iResolution.xy;
+    
+    uv=(uv-.5)*2.;
+    uv.x*=iResolution.x/iResolution.y;
+
+    uv=fract(uv*16.);
+    
+    float x1=step(.25,uv.x);
+    float y1=step(.25,uv.y);
+    // “并操作”
+    vec3 c=vec3(opUnion(x1,y1));
+    fragColor=vec4(c,1.);
+}
+```
+图就先不给了～
+
+### 波纹
+```glsl
+void mainImage(out vec4 fragColor,in vec2 fragCoord){
+    vec2 uv=fragCoord/iResolution.xy;
+    
+    uv=(uv-.5)*2.;
+    uv.x*=iResolution.x/iResolution.y;
+    
+    float d=sdfCircle(uv,.5);
+    d=sin(d*40.);
+    float mask=smoothstep(0.,.02,d);
+    vec3 c=vec3(mask);
+    fragColor=vec4(c,1.);
+}
+```
+
+## 极坐标
+目前的Shader的默认坐标系是笛卡尔坐标系（直角坐标系），除了这种坐标系外，还有极坐标系。
+![image](./assets/极坐标.png)
+极坐标系也能够帮助画出一些基于圆的图案来。
+
+先对uv进行居中处理
+```glsl
+    vec2 uv=fragCoord/iResolution.xy;
+    uv=(uv-.5)*2.;
+    uv.x*=iResolution.x/iResolution.y;
+```
+第一个纬度极角`a`，可以用数学函数`atan`计算直角坐标的反正切值即可得出。
+```glsl
+float phi = atan(uv,y,uv.x);
+```
+第二个纬度半径`r`，用`length`函数计算直角坐标到原点的距离也可算出。
+```glsl
+float r = length(uv);
+```
+将转换后的结果赋值给uv
+```glsl
+uv=vec2(phi,r);
+fragColor=vec4(uv,0.,1.);
+```
+最好把这个转换过程也封装为一个函数
+```glsl
+vec2 cart2polar(vec2 uv){
+    float phi=atan(uv.y,uv.x);
+    float r=length(uv);
+    return vec2(phi,r);
+}
+```
+最后实现的结果如下：
+![image](./assets/极坐标图案.png)
+

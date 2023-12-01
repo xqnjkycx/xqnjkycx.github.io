@@ -144,6 +144,9 @@ export default defineConfig({
             },{
               text:'绘图高手uv',
               link:'webgl-docs/shader/uv绘图.md'
+            },{
+              text:'纹理来了',
+              link:'webgl-docs/shader/纹理绘制.md'
             }
           ]
         }

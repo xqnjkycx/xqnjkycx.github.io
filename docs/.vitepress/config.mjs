@@ -147,6 +147,12 @@ export default defineConfig({
             },{
               text:'纹理来了',
               link:'webgl-docs/shader/纹理绘制.md'
+            },{
+              text:'随机与噪声',
+              link:'webgl-docs/shader/随机与噪声.md'
+            },{
+              text:'后期滤镜',
+              link:'webgl-docs/shader/后期滤镜.md'
             }
           ]
         }

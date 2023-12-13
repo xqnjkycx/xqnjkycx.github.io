@@ -25,10 +25,10 @@ export default defineConfig({
         items: [
           {
             text: '函数式编程',
-            link: '/bundle-tool-docs/vite/index'
+            link: '/javascript-docs/javascript-functional/index'
           }, {
-            text: 'JS基础',
-            link: '/bundle-tool-docs/webpack/index'
+            text: 'JS编程进阶',
+            link: '/javascript-docs/javascript-advanced/index'
           }
         ]
       }, {
@@ -69,6 +69,16 @@ export default defineConfig({
           text: 'Typescript基础',
           items: [
             { text: '基础类型', link: '/typescript-docs/基础类型' }
+          ]
+        }
+      ],
+      '/javascript-docs/javascript-advanced/':[
+        {
+          items:[
+            {
+              text:'开篇',
+              link:'javascript-docs/javascript-advanced/index.md'
+            }
           ]
         }
       ],
@@ -153,6 +163,9 @@ export default defineConfig({
             },{
               text:'后期滤镜',
               link:'webgl-docs/shader/后期滤镜.md'
+            },{
+              text:'顶点着色器',
+              link:'webgl-docs/shader/顶点着色器.md'
             }
           ]
         }

@@ -78,6 +78,9 @@ export default defineConfig({
             {
               text:'开篇',
               link:'javascript-docs/javascript-advanced/index.md'
+            },{
+              text:'作用域',
+              link:'javascript-docs/javascript-advanced/作用域.md'
             }
           ]
         }

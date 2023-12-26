@@ -107,6 +107,7 @@ docs/.vitepress/dist
 这里也要把构建后的`dist`目录的内容也忽略了，因为这个主分支`master`只用于存放源码，构建后的文档会在后续内容放在另外一个分支中。
 
 ```shell
+git remote add "远程仓库地址"
 git add .
 git commit -m "创建博客工程"
 git push

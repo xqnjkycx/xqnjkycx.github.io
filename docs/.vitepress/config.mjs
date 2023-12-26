@@ -81,6 +81,9 @@ export default defineConfig({
             },{
               text:'作用域',
               link:'javascript-docs/javascript-advanced/作用域.md'
+            },{
+              text:'类型判断',
+              link:'javascript-docs/javascript-advanced/类型判断.md'
             }
           ]
         }

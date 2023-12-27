@@ -84,6 +84,9 @@ export default defineConfig({
             },{
               text:'类型判断',
               link:'javascript-docs/javascript-advanced/类型判断.md'
+            },{
+              text:"字符串",
+              link:'javascript-docs/javascript-advanced/字符串.md'
             }
           ]
         }

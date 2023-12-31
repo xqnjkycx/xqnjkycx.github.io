@@ -87,6 +87,9 @@ export default defineConfig({
             },{
               text:"字符串",
               link:'javascript-docs/javascript-advanced/字符串.md'
+            },{
+              text:"Symbol",
+              link:'javascript-docs/javascript-advanced/Symbol.md'
             }
           ]
         }

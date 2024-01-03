@@ -90,6 +90,12 @@ export default defineConfig({
             },{
               text:"Symbol",
               link:'javascript-docs/javascript-advanced/Symbol.md'
+            },{
+              text:'数组',
+              link:'javascript-docs/javascript-advanced/数组.md'
+            },{
+              text:'函数',
+              link:'javascript-docs/javascript-advanced/函数.md'
             }
           ]
         }

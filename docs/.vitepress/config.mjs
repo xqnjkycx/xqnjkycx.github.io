@@ -96,6 +96,9 @@ export default defineConfig({
             },{
               text:'函数',
               link:'javascript-docs/javascript-advanced/函数.md'
+            },{
+              text:'对象的基本结构',
+              link:'javascript-docs/javascript-advanced/对象的基本结构.md'
             }
           ]
         }

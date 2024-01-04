@@ -124,7 +124,7 @@ cd docs/.vitepress/dist
 git init
 git add -A
 git commit -m"给我狠狠地提交"
-git push -f https://github.com/await/await.github.io.git master:gh-pages
+git push -f https://github.com/xqnjkycx/xqnjkycx.github.io.git master:gh-pages
 ```
 **记得push的地址填你自己的github地址**
 

@@ -99,6 +99,12 @@ export default defineConfig({
             },{
               text:'对象的基本结构',
               link:'javascript-docs/javascript-advanced/对象的基本结构.md'
+            },{
+              text:'对象的操作',
+              link:'javascript-docs/javascript-advanced/对象的操作.md'
+            },{
+              text:'对象的遍历',
+              link:'javascript-docs/javascript-advanced/对象的遍历.md'
             }
           ]
         }

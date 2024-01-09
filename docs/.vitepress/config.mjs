@@ -105,6 +105,9 @@ export default defineConfig({
             },{
               text:'对象的遍历',
               link:'javascript-docs/javascript-advanced/对象的遍历.md'
+            },{
+              text:'class',
+              link:'javascript-docs/javascript-advanced/class.md'
             }
           ]
         }

@@ -108,6 +108,9 @@ export default defineConfig({
             },{
               text:'class',
               link:'javascript-docs/javascript-advanced/class.md'
+            },{
+              text:'隐式类型转换',
+              link:'javascript-docs/javascript-advanced/隐式类型转换.md'
             }
           ]
         }

@@ -111,6 +111,15 @@ export default defineConfig({
             },{
               text:'隐式类型转换',
               link:'javascript-docs/javascript-advanced/隐式类型转换.md'
+            },{
+              text:'JSON',
+              link:'javascript-docs/javascript-advanced/JSON.md'
+            },{
+              text:'索引键值集合',
+              link:'javascript-docs/javascript-advanced/索引键值集合.md'
+            },{
+              text:'二进制',
+              link:'javascript-docs/javascript-advanced/二进制.md'
             }
           ]
         }

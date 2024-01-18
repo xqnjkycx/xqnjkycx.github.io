@@ -120,6 +120,9 @@ export default defineConfig({
             },{
               text:'二进制',
               link:'javascript-docs/javascript-advanced/二进制.md'
+            },{
+              text:'日期操作',
+              link:'javascript-docs/javascript-advanced/日期操作.md'
             }
           ]
         }

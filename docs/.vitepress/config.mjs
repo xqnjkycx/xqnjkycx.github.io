@@ -123,6 +123,9 @@ export default defineConfig({
             },{
               text:'日期操作',
               link:'javascript-docs/javascript-advanced/日期操作.md'
+            },{
+              text:'错误处理',
+              link:'javascript-docs/javascript-advanced/错误处理.md'
             }
           ]
         }

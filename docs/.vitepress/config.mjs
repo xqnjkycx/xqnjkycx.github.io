@@ -129,6 +129,9 @@ export default defineConfig({
             },{
               text:'Reflect',
               link:'javascript-docs/javascript-advanced/Reflect.md'
+            },{
+              text:'Proxy',
+              link:'javascript-docs/javascript-advanced/Proxy.md'
             }
           ]
         }

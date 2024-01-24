@@ -16,7 +16,15 @@ export default defineConfig({
         link: ''
       }, {
         text: '业务场景',
-        link: ''
+        items: [
+          {
+            text:'性能优化基础',
+            link:'/performance-docs/foundation/index'
+          },{
+            text:'性能优化进阶',
+            link:'/performance-docs/advanced/index'
+          }
+        ]
       }, {
         text: 'NodeJS笔记',
         link: '/nodejs-docs/深入浅出NodeJS'
@@ -64,6 +72,28 @@ export default defineConfig({
       }
     ],
     sidebar: {
+      '/performance-docs/foundation/':[
+        {
+          items:[
+            {
+              items:[
+                {text:'入门',link:'/performance/foundation/index.md'}
+              ]
+            }
+          ]
+        }
+      ],
+      '/performance-docs/advanced/':[
+        {
+          items:[
+            {
+              items:[
+                {text:'入门',link:'/performance/advanced/index.md'}
+              ]
+            }
+          ]
+        }
+      ],
       '/typescript-docs/': [
         {
           text: 'Typescript基础',

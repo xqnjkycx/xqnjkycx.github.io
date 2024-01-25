@@ -162,6 +162,9 @@ export default defineConfig({
             },{
               text:'Proxy',
               link:'javascript-docs/javascript-advanced/Proxy.md'
+            },{
+              text:'异步编程',
+              link:'javascript-docs/javascript-advanced/异步编程.md'
             }
           ]
         }

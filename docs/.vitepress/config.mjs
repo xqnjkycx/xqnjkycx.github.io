@@ -10,12 +10,8 @@ export default defineConfig({
     logo: '/logo.png',
     nav: [
       { text: '主页', link: '/' },
-      { text: 'TypeScript笔记', link: '/typescript-docs/基础类型' },
-      {
+      { text: 'TypeScript笔记', link: '/typescript-docs/基础类型' }, {
         text: '性能优化',
-        link: ''
-      }, {
-        text: '业务场景',
         items: [
           {
             text:'性能优化基础',
@@ -77,7 +73,8 @@ export default defineConfig({
           items:[
             {
               items:[
-                {text:'入门',link:'/performance/foundation/index.md'}
+                {text:'入门',link:'/performance-docs/foundation/index.md'},
+                {text:"构建工具的优化",link:'/performance-docs/foundation/构建工具的优化.md'}
               ]
             }
           ]
@@ -88,7 +85,8 @@ export default defineConfig({
           items:[
             {
               items:[
-                {text:'入门',link:'/performance/advanced/index.md'}
+                {text:'入门',link:'/performance/advanced/index.md'},
+                
               ]
             }
           ]
@@ -165,6 +163,9 @@ export default defineConfig({
             },{
               text:'异步编程',
               link:'javascript-docs/javascript-advanced/异步编程.md'
+            },{
+              text:'模块化',
+              link:'javascript-docs/javascript-advanced/模块化.md'
             }
           ]
         }

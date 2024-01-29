@@ -166,6 +166,15 @@ export default defineConfig({
             },{
               text:'模块化',
               link:'javascript-docs/javascript-advanced/模块化.md'
+            },{
+              text:'strict',
+              link:'javascript-docs/javascript-advanced/strict.md'
+            },{
+              text:'全局对象',
+              link:'javascript-docs/javascript-advanced/全局对象.md'
+            },{
+              text:'Dom节点的原型',
+              link:'javascript-docs/javascript-advanced/Dom节点的原型.md'
             }
           ]
         }

@@ -40,7 +40,7 @@ export default defineConfig({
         items: [
           {
             text: 'Vue技巧',
-            link: '/bundle-tool-docs/vite/index'
+            link: '/vue-docs/skills/如何写好组件和hook.md'
           }, {
             text: 'Vue原理',
             link: '/bundle-tool-docs/vite/index'
@@ -74,7 +74,9 @@ export default defineConfig({
             {
               items:[
                 {text:'入门',link:'/performance-docs/foundation/index.md'},
-                {text:"构建工具的优化",link:'/performance-docs/foundation/构建工具的优化.md'}
+                {text:"构建工具的优化",link:'/performance-docs/foundation/构建工具的优化.md'},
+                {text:'图片的优化',link:'/performance-docs/foundation/图片的优化.md'},
+                {text:'浏览器缓存优化',link:'/performance-docs/foundation/浏览器缓存.md'}
               ]
             }
           ]
@@ -266,6 +268,17 @@ export default defineConfig({
             }
           ]
         }
+      ],
+      '/vue-docs/skills':[{
+        text:'Vue技巧',
+        items: [
+          {
+            text:'如何写好组件和hooks',
+            link:'/vue-docs/skills/如何写好组件和hook.md'
+          },
+        ]
+      }
+
       ]
     },
     footer: {

@@ -98,7 +98,9 @@ export default defineConfig({
         {
           text: 'Typescript基础',
           items: [
-            { text: '基础类型', link: '/typescript-docs/基础类型' }
+            { text: '基础类型', link: '/typescript-docs/基础类型' },
+            { text: '接口',link:'/typescript-docs/接口'},
+            {text:'函数',link:'/typescript-docs/函数'}
           ]
         }
       ],

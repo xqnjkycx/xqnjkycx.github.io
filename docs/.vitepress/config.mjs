@@ -104,7 +104,8 @@ export default defineConfig({
             { text:'字面量类型',link:'/typescript-docs/字面量类型'},
             { text:'联合类型',link:'/typescript-docs/联合类型与交叉类型'},
             { text:'类',link:'/typescript-docs/类'},
-            {text:'枚举',link:'/typescript-docs/枚举'}
+            {text:'枚举',link:'/typescript-docs/枚举'},
+            {text:'高级类型',link:'/typescript-docs/高级类型'}
           ]
         }
       ],

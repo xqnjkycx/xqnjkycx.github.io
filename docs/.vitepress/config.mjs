@@ -176,6 +176,9 @@ export default defineConfig({
               text:'模块化',
               link:'javascript-docs/javascript-advanced/模块化.md'
             },{
+              text:'事件循环',
+              link:'javascript-docs/javascript-advanced/事件循环.md'
+            },{
               text:'strict',
               link:'javascript-docs/javascript-advanced/strict.md'
             },{

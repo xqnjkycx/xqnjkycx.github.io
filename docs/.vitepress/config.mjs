@@ -105,7 +105,9 @@ export default defineConfig({
             { text:'联合类型',link:'/typescript-docs/联合类型与交叉类型'},
             { text:'类',link:'/typescript-docs/类'},
             {text:'枚举',link:'/typescript-docs/枚举'},
-            {text:'高级类型',link:'/typescript-docs/高级类型'}
+            {text:'高级类型',link:'/typescript-docs/高级类型'},
+            {text:'实用工具类型',link:'/typescript-docs/实用工具类型'},
+            {text:'装饰器',link:'/typescript-docs/装饰器'}
           ]
         }
       ],

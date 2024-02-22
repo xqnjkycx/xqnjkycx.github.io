@@ -107,7 +107,8 @@ export default defineConfig({
             {text:'枚举',link:'/typescript-docs/枚举'},
             {text:'高级类型',link:'/typescript-docs/高级类型'},
             {text:'实用工具类型',link:'/typescript-docs/实用工具类型'},
-            {text:'装饰器',link:'/typescript-docs/装饰器'}
+            {text:'装饰器',link:'/typescript-docs/装饰器'},
+            {text:'声明合并',link:'/typescript-docs/声明合并'}
           ]
         }
       ],

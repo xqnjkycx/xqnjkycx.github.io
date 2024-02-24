@@ -109,7 +109,8 @@ export default defineConfig({
             {text:'实用工具类型',link:'/typescript-docs/实用工具类型'},
             {text:'装饰器',link:'/typescript-docs/装饰器'},
             {text:'声明合并',link:'/typescript-docs/声明合并'},
-            {text:'mixins混入',link:'/typescript-docs/mixins混入'}
+            {text:'mixins混入',link:'/typescript-docs/mixins混入'},
+            {text:'模块',link:'/typescript-docs/模块'}
           ]
         }
       ],
@@ -182,7 +183,12 @@ export default defineConfig({
             },{
               text:'事件循环',
               link:'javascript-docs/javascript-advanced/事件循环.md'
-            },{
+            },
+            {
+              text:'浏览器渲染原理',
+              link:'javascript-docs/javascript-advanced/浏览器渲染原理.md'
+            }
+            ,{
               text:'strict',
               link:'javascript-docs/javascript-advanced/strict.md'
             },{

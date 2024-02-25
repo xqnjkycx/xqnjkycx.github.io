@@ -327,5 +327,331 @@ setTimeout(function(){
 },0)
 ```
 :::tip
-
+其实调用`setTimeout`这样的定时器，会被插入到定时器观察者内部的一个红黑树中。每次Tick执行时，会从该红黑树中迭代取出定时器对象，检查是否超过定时时间，如果超过就形成了一个事件，它的回调函数就会立即执行
 :::
+所以可以看到，**定时器的问题在于它不是真正意义上精确**。采用定时器需要动用红黑树，创建定时器对象和迭代等操作比较浪费性能。
+
+所以更加推荐使用`process.nextTick`方法的操作相对比较轻量。
+
+每次调用`process.nextTick`就只会将回调函数放入到队列中，在下一轮的Tick取出执行。定时器中采用红黑树的操作事件复杂度为O(N)，而nextTick的时间复杂度为O(1)。所以process.nextTick更加高效是毋庸置疑的。
+
+## Node的异步编程的优势和缺点有哪些？
+### 优势
+Node带来的最大的特性莫过于基于事件驱动的非阻塞I/O模式，非阻塞I/O可以使CPU和I/O并不互相依赖对等。 让资源得到更好的利用。对于网络应用而言，并行带来的 想象空间更大，延展而开的是分布式和云。并行使得各个单点之间能够更有效地组织起来。
+
+![image](./assets/%E4%BA%8B%E4%BB%B6%E9%A9%B1%E5%8A%A8%E7%9A%84%E4%BC%98%E5%8A%BF.png)
+
+如果采用传统的同步I/O模型，分布式计算中性能的折扣将会是非常明显的。
+
+利用事件循环的方式，JavaScript线程就像一个分配任务和处理结果的监控者，而I/O池中各个线程都是执行者，两者是互不依赖的，所以可以保持整体的高效率。
+
+### 缺点
+
+#### 异常处理
+`try/catch`处理异常时对于异步编程而言并不是那么适用。 异步I/O的实现主要包含两个阶段： 提交请求和处理结果。这两个阶段中间有事件循环的调度，两者彼此不关联。异步方法则通常在 第一个阶段提交请求后立即返回，因为异常并不一定发生在这个阶段  ，这导致`try/catch`并不能捕获回调函数中报出的异常。
+
+```js
+var async = callback => process.nextTick(callback)
+
+try{
+  async(callback)
+}catch(e){
+  // todo...
+}
+```
+调用async()方法后，callback被存放起来，直到下一个事件循环（Tick）才会取出来执行。 尝试对异步方法进行try/catch操作只能捕获当次事件循环内的异常 。
+
+因此Node在处理异常时，形成了一种约定，将异常作为回调函数的第一个参数返回。
+
+```js
+fs.writeFile(str,err=>{
+  //...
+})
+```
+同时在编写自己的异步方法时，也要尽量去遵循这一些原则
+- 原则一：必须执行调用者传入的回调函数
+- 原则二：正确传递回异常拱调用者判断
+
+#### 函数嵌套过深
+在前端开发中，DOM事件相对而言不会存在互相依赖 或需要多个事件一起协作的场景，较少存在异步多级依赖的情况。下面的代码为彼此独立的DOM 事件绑定
+```js
+$(selector).click(function (event) { 
+ // TODO
+}); 
+$(selector).change(function (event) { 
+ // TODO
+}); 
+```
+对于Node来说，事务中多个异步调用的场景可以说是比比皆是
+```js
+fs.readdir(path.join(__dirname, '..'), function (err, files) { 
+ 	files.forEach(function (filename, index) { 
+ 	fs.readFile(filename, 'utf8', function (err, file) { 
+ 	// TODO
+ 	}); 
+ }); 
+}); 
+```
+这种做法在结果上来看是没有什么问题的，问题在于没有利用好异步I/O带来的并行优势。
+:::info
+甚至有人说过 **因为嵌套的深度，未来里最难看的代码一定要从Node中诞生**
+:::
+
+#### 代码阻塞
+Node中没有`sleep()`这样的功能去实现真正的代码阻塞。而`setTimeout`和`setInterval`虽然能够实现延时，但是并不能组织后续代码的持续执行。
+
+如果要实现代码阻塞应该这么来写
+```js
+var start = new Date()
+while(new Date() - start < 1000){
+  // ...
+}
+```
+这段代码写的真是烂透了，完全破坏了事件循环的调度，而且Node单线程的原因，CPU资源会完全用户服务这段代码，导致其他请求暂时不会得到响应。
+
+## 异步编程常见解决方案
+现在异步编程的主要解决方案有如下几种：
+- 事件发布/订阅模式
+- Promsie/Deffered 模式
+- 流程控制库
+
+### 事件发布/订阅模式
+ Node自身提供的events模块（http://nodejs.org/docs/latest/api/events.html）是发布/订阅模式的 一个简单实现 ，它具有 addListener/on() 、 once() 、 removeListener() 、 removeAllListeners()和emit()等基本的事件监听模式的方法实现。事件发布/订阅模式的操作极 其简单，示例代码如下：  
+ ```js
+ // 订阅
+emitter.on("event1", function (message) { 
+ console.log(message); 
+}); 
+// 发布
+emitter.emit('event1', "I am message!"); 
+ ```
+ 事件发布/订阅模式可以实现一个事件与多 个回调函数的关联，这些回调函数又称为事件侦听器。通过emit()发布事件后，消息会立即传递 给当前事件的所有侦听器执行。侦听器可以很灵活地添加和删除，使得事件和具体处理逻辑之间 可以很轻松地关联和解耦。
+
+ 事件侦听器模式也是一种钩子（hook）机制，利用钩子导出内部数据或 状态给外部的调用者。Node中的很多对象大多具有黑盒的特点，功能点较少，如果不通过事件钩 子的形式，我们就无法获取对象在运行期间的中间值或内部状态。这种通过事件钩子的方式，可 以使编程者不用关注组件是如何启动和执行的，只需关注在需要的事件点上即可 。
+
+ 比如经典的http场景:
+ ```js
+ var options = { 
+ host: 'www.google.com', 
+ port: 80, 
+ path: '/upload', 
+ method: 'POST' 
+}; 
+var req = http.request(options, function (res) { 
+ console.log('STATUS: ' + res.statusCode); 
+ console.log('HEADERS: ' + JSON.stringify(res.headers)); 
+ res.setEncoding('utf8'); 
+ res.on('data', function (chunk) { 
+ console.log('BODY: ' + chunk); 
+ }); 
+ res.on('end', function () { 
+ // TODO 
+ }); 
+}); 
+req.on('error', function (e) { 
+ console.log('problem with request: ' + e.message); 
+}); 
+// write data to request body 
+req.write('data\n'); 
+req.write('data\n')
+ ```
+ 在这段代码中，程序员只需要将视线放到`error``data``end`这些业务事件点上即可。
+
+除此之外，**事件发布/订阅模式**还可以解决一些额外的问题：
+
+#### 利用事件队列解决雪崩问题
+在事件订阅/发布模式中，通常也有一个once()方法，通过它添加的侦听器只能执行一次，在 执行之后就会将它与事件的关联移除。这个特性常常可以帮助我们过滤一些重复性的事件响应。
+
+ 在计算机中，缓存由于存放在内存中，访问速度十分快，常常用于加速数据访问，让绝大多 数的请求不必重复去做一些低效的数据读取。所谓雪崩问题，就是在高访问量、大并发量的情况 下缓存失效的情景，此时大量的请求同时涌入数据库中，数据库无法同时承受如此大的查询请求， 进而往前影响到网站整体的响应速度  
+
+ 假如有一条查询数据库的查询语句:
+
+ ```js
+ var select = function (callback) { 
+ db.select("SQL", function (results) { 
+ callback(results); 
+ }); 
+}; 
+ ```
+ 如果站点刚好启动，这时缓存中是不存在数据的，而且如果访问量巨大，同一句sql会被发送到数据库反复查询，导致服务整体性能，改进方案就是添加一个状态锁
+ ```js
+ var status = "ready"; 
+var select = function (callback) { 
+   if (status === "ready") { 
+     status = "pending"; 
+     db.select("SQL", function (results) { 
+       status = "ready"; 
+       callback(results); 
+     }); 
+   } 
+}; 
+ ```
+ 在这种情况下，连续地多次调用`select`时，只有第一次调用是生效的，后续的`select`都是没有数据服务的
+ ```js
+ var proxy = new events.EventEmitter(); 
+  var status = "ready"; 
+  var select = function (callback) { 
+     proxy.once("selected", callback); 
+     if (status === "ready") { 
+     status = "pending"; 
+     db.select("SQL", function (results) { 
+       proxy.emit("selected", results); 
+       status = "ready"; 
+     }); 
+   } 
+}; 
+ ```
+ 利用了once()方法，将所有请求的回调都压入事件队列中，利用其执行一次就会将 监视器移除的特点，保证每一个回调只会被执行一次。对于相同的SQL语句，保证在同一个查询 开始到结束的过程中永远只有一次。**SQL在进行查询时，新到来的相同调用只需在队列中等待数 据就绪即可，一旦查询结束，得到的结果可以被这些调用共同使用**。这种方式能节省重复的数据 库调用产生的开销。由于Node单线程执行的原因，此处无须担心状态同步问题。  
+
+ #### 多异步之间的协作方案
+ 一般而言，事件与侦听器的关系是一对多，但在异步编程中，也会出现事件 与侦听器的关系是多对一的情况，也就是说一个业务逻辑可能依赖两个通过回调或事件传递的结果。
+
+  假设现在有这么一个业务，假设渲染页面需要**模板读取**，**数据读取**，**本地化资源**读取三个条件为前提，如果用串行的方式来执行，那么就享受不了异步I/O带来的性能提升。
+
+  那么就需要借助一个第三方函数和第三方变量来处理异步协作的结果，把这个用于检测 次数的变量叫做哨兵变量，偏函数可以处理哨兵变量和第三方函数的关系了。
+
+  相关代码如下：
+  ```js
+  var after = function (times, callback) { 
+   // 哨兵变量
+   var count = 0, results = {}; 
+   return function (key, value) { 
+     results[key] = value; 
+     count++; 
+     if (count === times) { 
+       callback(results); 
+     } 
+   }; 
+}; 
+
+var emitter = new events.Emitter(); 
+var done = after(times, render); 
+emitter.on("done", done); 
+// 也可以绑其他函数
+emitter.on("done", other); 
+fs.readFile(template_path, "utf8", function (err, template) { 
+ emitter.emit("done", "template", template); 
+}); 
+db.query(sql, function (err, data) { 
+ emitter.emit("done", "data", data); 
+}); 
+l10n.get(function (err, resources) { 
+ emitter.emit("done", "resources", resources); 
+});
+  ```
+  ### Promise/Deferred 模式
+  Promise/A 提议对单个异步操作做出了一些抽象的定义：
+  - Promise操作只会处在3种状态的一种：未完成态、完成态和失败态。 
+  - Promise的状态只会出现从未完成态向完成态或失败态转化，不能逆反。完成态和失败态 不能互相转化。  
+  - Promise的状态一旦转化，将不能被更改。  
+![image](./assets/promise%E7%8A%B6%E6%80%81%E5%8F%98%E5%8C%96.png)
+
+其中 Deferred主要是用于内部， 用于维护异步模型的状态；Promise则作用于外部，通过then()方法暴露给外部以添加自定义逻辑。 Promise和Deferred的整体关系  
+![image](./assets/Defferrd.png)
+其实就是浏览器端的promise规范了，这里不过多解释了~
+
+### 流程控制
+流程控制是一种非模式化的应用，不规范，但是非常灵活。
+
+#### 尾触发和Next
+这类方法需要手工调用，才能持续后续的调用，这类方法叫做尾触发，常见的关键词是next，相关代码如下：
+```js
+var app = connect(); 
+// Middleware
+app.use(connect.staticCache()); 
+app.use(connect.static(__dirname + '/public')); 
+app.use(connect.cookieParser()); 
+app.use(connect.session()); 
+app.use(connect.query()); 
+app.use(connect.bodyParser()); 
+app.use(connect.csrf()); 
+app.listen(3001); 
+```
+这是express中常见的一种调用方式，每个中间价传递请求对象，响应对象和尾触发函数，通过队列形成一个处理流：
+![image](./assets/%E5%B0%BE%E8%A7%A6%E5%8F%91.png)
+可以看到，用户可以通过调用`next`方法去进入到下一个函数中，而`app.use`就可以把中间件放入到队列中。
+```js
+app.use = function(route,fn){
+  // some code
+  this.stack.push({ route, handle : fn })
+  return this
+}
+```
+可以看到`stack`属性是其服务器内部的属性，用于维护中间件队列，通过`use`方法将中间件放入到队列中，其中`next`方法较为复杂，但核心原理就是取出队列中的中间件并执行，同时传入当前方法来实现递归调用，达到持续触发的目的：
+```js
+function next(err){
+ layer = stack[index++]
+ layer.handle(req,res,next) 
+}
+```
+尽管中间件这种尾触发模式并不是要求每个中间件方法都是异步的，但是如果每个步骤都采用异步来完成，实际上只是串行化的处理，没办法通过执行并行的异步调用来提升业务的处理效率，流式处理可以将一些串行的逻辑扁平化，但是并行逻辑处理还是需要搭配事件或者**Promise**完成，这样业务在纵向和横向都能各自清楚。
+
+## Node如何做异步并发控制
+异步编程方法里，解决问题都要保持异步的性能优势，提升编程体验。
+
+在Node中，可以十分方便的利用异步发起并发调用，可以轻松的发起100次异步调用，如果并发量过大，会将下层服务器给吃光，如果对文件系统进行大量并发调用，操作系统的文件描述符数量将会被瞬间用光，然后抛出错误Error : `EMFILE, too many open files`
+
+所以，同步I/O 因为每个I/O都是彼此阻塞的，在循环体中，总是一个接着一个调用，不会出现消耗文件描述符太多的问题，但同时性能有瓶颈，但是异步I/O也需要给底层资源给予一定的过载保护。
+
+其基本的解决思路如下：
+- 通过一个队列来控制并发量
+- 如果当前活跃(指调用发起但未执行的回调)的异步调用量小于限定值，从队列中取出
+- 如果当前活跃调用达到限定值，调用暂时存放在队列中
+- 每个异步调用结束的时候，从队列中取出新的异步调用执行
+
+### 基本实现
+实现一个`bagpipe`类，暴露一个`push`方法和full事件，示例代码如下：
+```js
+var Bagpipe = require('bagpipe');
+// 设定最大并发数为10
+var bagpipe = new Bagpipe(10);
+for (var i = 0; i < 100; i++) {
+   bagpipe.push(async, function () {
+   	// 异步回调执行
+   });
+}
+bagpipe.on('full', function (length) {
+ console.warn('底层系统处理不能及时完成，队列拥堵，目前队列长度为:' + length);
+}); 
+```
+其中`push`方法依然是通过函数变换的方式得到的，其核心实现如下：
+```js
+      class asyncLimiter {
+        constructor(requests, size) {
+          this.requests = requests;
+          this.size = size;
+          this.limits = [];
+          this.nextReqIndex = size - 1;
+        }
+        play() {
+          this.limits = this.requests.slice(0, this.size);
+          this.limits.forEach((req) => this.promiserReq(req));
+        }
+        promiserReq(request) {
+          return new Promise((resolve, reject) => {
+            if (request) {
+              request().finally(() => {
+                this.limits.splice(this.limits.indexOf(request), 1);
+                if (this.limits.length <= this.size) {
+                  this.nextReqIndex++;
+                  if (this.requests[this.nextReqIndex]) {
+                    this.limits.push(
+                      this.promiserReq(this.requests[this.nextReqIndex])
+                    );
+                  }
+                }
+              });
+            }
+          });
+        }
+      }
+```
+甚至也可以继续往下进行扩展：
+### 拒绝模式
+事实上需要考虑一些深度使用的方式。
+
+对于大量的异步调用，也需要分场景进行区分， 因为涉及并发控制，必然会造成部分调用需要进行等待。如果调用有实时方面的需求，那么需要 快速返回，因为等到方法被真正执行时，可能已经超过了等待时间，即使返回了数据，也没有意 义了。这种场景下需要快速失败，让调用方尽早返回，而不用浪费不必要的等待时间
+
+在拒绝模式下，如果等待的调用队列也满了之后，新来的调用就直接返给它一个队列太忙的 拒绝异常。
+### 超时控制
+造成队列拥塞的主要原因是异步调用耗时太久，调用产生的速度远远高于执行的速度。为了防 止某些异步调用使用了太多的时间，我们需要设置一个时间基线，将那些执行时间太久的异步调用 清理出活跃队列，让排队中的异步调用尽快执行。否则在拒绝模式下，会有太多的调用因为某个执 行得慢，导致得到拒绝异常。相对而言，这种场景下得到拒绝异常显得比较无辜。为了公平地对待 在实时需求场景下的每个调用，必须要控制每个调用的执行时间，将那些害群之马踢出队伍。 为此，bagpipe也提供了超时控制。超时控制是为异步调用设置一个时间阈值，如果异步调用 没有在规定时间内完成，我们先执行用户传入的回调函数，让用户得到一个超时异常，以尽早返 回。然后让下一个等待队列中的调用执行。

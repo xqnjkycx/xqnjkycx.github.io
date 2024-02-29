@@ -299,7 +299,19 @@ export default defineConfig({
         ]
       }
 
-      ]
+      ],
+      '/internet-docs/internet/':[{
+        text:'计算机网络',
+        items:[
+          {
+            text: '传输层',
+            link: 'internet-docs/internet/teleport.md'
+          }, {
+            text: '应用层',
+            link: 'internet-docs/internet/apply.md'
+          },
+        ]
+      }]
     },
     footer: {
       message: '冷的咖啡，我庆幸着，你在续杯',

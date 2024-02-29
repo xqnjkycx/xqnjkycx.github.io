@@ -16,6 +16,9 @@ hero:
       text: 我也想快速搭建这样的博客😚！
       link: /project-docs/VitePress/VitePress博客.md
     - theme: alt
+      text: 计算机网络第6版学习笔记
+      link: /internet-docs/internet/teleport.md
+    - theme: alt
       text: 我的语雀🐦
       link: "https://www.yuque.com/await-6vbwx/"
 

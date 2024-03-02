@@ -841,3 +841,349 @@ rs.on("end",()=>console.log(data)
 
 其实现原理为：在得到编码之后，可以知道宽字节符字符串在UTF-8编码下是以3个字节的方式存储的，所以会把a字节保留在**decoder**的实例内部，在第二次write的时候，会将a字节和下面开头的bc字节合在一起，从而解决乱码问题。
 :::
+
+## Cookie
+### 基本概念
+HTTP是一个无状态的协议，现实中的业务却是需要一定的状态的，否则无法区分用户之间的身份。Cookie就是用来标记一个用户的。
+
+Cookie的处理在于：
+- 服务器向客户端发送Cookie
+- 浏览器将Cookie保存
+- 之后每次浏览器都会将Cookie发向服务器
+
+而告知客户端的方式是通过响应报文实现的，响应的Cookie的值在于Set-Cookie字段中。它的格式与请求中的格式不太相同，规范中对它的定义如下：
+
+`Set-Cookie:name=value;Path=/;Expires=Sun,23-Apr-23 09:01:35 GMT;Domain=.domain.com;`
+
+- Path表示Cookie影响到的路径，当前访问的路径不满足匹配时，浏览器不会发送这个Cookie
+- Expires和Max-Age是用来告知浏览器Cookie何时过期。如果设置了过期时间，浏览器将会把Cookie内容写入到磁盘中并进行保存，下次打开浏览器依旧有效
+- HttpOnly告知浏览器不允许通过脚本`document.cookie`中进行访问和更改
+- Secure当Secure值为true时，在Http中是无效的，在Https中才有效
+
+客户端收到这个带Set-Cookie的响应后，在之后的请求时会在Cookie字段中带上这个值
+
+### 使用场景
+广告和在线统计领域是最为依赖Cookie的，通过嵌入第三方的广告或者统计脚本，将Cookie和当前页面绑定，这样就可以标识用户，得到用户的浏览行为，广告商就可以定向投放广告了，虽然这种行为看起来很极端，但从Cookie的原理来说，它只能做到标识，而不能做任何具有破坏性的事情，如果依然担心自己的站点和用户被记录下行为，那就不要挂任何第三方的脚本。
+
+### 缺点
+Cookie对性能有一定的影响。一旦服务器端向客户端发送了设置Cookie的意图，除非Cookie过期，否则客户端每次请求都会发送这些Cookie到服务器端，一旦设置的Cookie过多，将会导致报头较大。大多数的Cookie并不需要每次都用上，因为这会造成带宽的部分浪费。
+
+更严重的情况是，如果在域名的根节点设置Cookie，几乎所有子路径下的请求都会带上这些Cookie。
+
+并且Cookie在前后端都有被修改的风险
+
+## Session
+Cookie的问题在于可以在前端进行修改，导致数据容易被篡改和伪造，Session应运而生，由于Session数据只保留在服务器端，客户端无法修改，这样数据就有一定的保障，数据也无须在协议中每次都被传递。
+
+主要解决的问题在于，需要将每个客户和服务器中的数据一一对应起来，一般有两种实现方式。
+
+### 基于Cookie来实现用户和数据的映射
+虽然所有的数据都放在Cookie中不可取的，将令牌放在Cookie中也是可取的。因为令牌一旦被篡改，就丢失了映射关系，也无法修改服务器存在的数据，并且Session的有效期通常较短，一般是设置为20分钟，如果在20分钟内客户端和服务器端没有交互产生，服务器端就会将数据删除。由于数据过期时间较短，且在服务器端存储数据，因此安全性相对较高。
+
+一旦服务器端启用了Session，它就约定一个键值作为Session的口令，这个值理论上是随意约定的，比如比如Connect默认采用`connect_uid`，一旦服务器检查到用户请求Cookie中没有携带该值，它就会为之生成一个值，这个值是唯一而不重复的值，并且设定超时时间
+
+```js
+var sessions = {};
+var key = 'session_id';
+var EXPIRES = 20 * 60 * 1000;
+var generate = function () {
+   var session = {};
+   session.id = (new Date()).getTime() + Math.random();
+   session.cookie = {
+   expire: (new Date()).getTime() + EXPIRES
+   };
+   sessions[session.id] = session;
+   return session;
+}; 
+```
+每个请求到来时，检查Cookie中的口令与服务器端的数据，如果过期就需要重新生成。还需要在响应给客户端设置新的值，以便于下次请求时能够对应服务器端的数据。
+
+这样在session中保存的数据比直接在Cookie中保存数据要安全得多。这种实现方案依赖Cookie实现，而且也是目前大多数Web应用的方案，如果客户端禁止使用Cookie，那么大多数网站将无法实现登录操作。
+
+### 通过查询字符串来实现浏览器和服务器端数据的对应
+有的服务器在客户端禁用Cookie时，会采用这种方案实现退化。
+
+这个原理是检查请求的查询字符串，如果没有值，就会先生成新的带值的URL，如下所示：
+```js
+var getURL = function(_url, key, value){
+  var obj = url.parse(_url, true); 
+ 	obj.query[key] = value; 
+ 	return url.format(obj); 
+}
+```
+然后形成跳转，让客户端重新发起请求
+```js
+function (req, res) { 
+   var redirect = function (url) { 
+   res.setHeader('Location', url); 
+   res.writeHead(302); 
+   res.end(); 
+   }; 
+   var id = req.query[key]; 
+   if (!id) { 
+     var session = generate(); 
+     redirect(getURL(req.url, key, session.id)); 
+   } else { 
+     var session = sessions[id]; 
+     if (session) { 
+       if (session.cookie.expire > (new Date()).getTime()) { 
+           // 更新超时时间
+           session.cookie.expire = (new Date()).getTime() + EXPIRES; 
+           req.session = session; 
+           handle(req, res); 
+       } else { 
+           // 超时了，删除旧的数据，并重新生成
+           delete sessions[id]; 
+           var session = generate(); 
+           redirect(getURL(req.url, key, session.id)); 
+      	 } 
+       } else { 
+         // 如果session过期或口令不对，重新生成session 
+         var session = generate(); 
+         redirect(getURL(req.url, key, session.id)); 
+     } 
+   }
+}
+```
+用户访问`http://localhost/pathname`时，如果服务器端发现查询字符串中不带session_id参数， 就会将用户跳转到`http://localhost/pathname?session_id=12344567`这样一个类似的地址。如果浏览 器收到302状态码和Location报头，就会重新发起新的请求，如下所示  
+```text
+< HTTP/1.1 302 Moved Temporarily 
+< Location: /pathname?session_id=12344567 
+```
+可以看出这个方案的风险太大了。**还有一种比较有趣的处理Session的方式是利用HTTP请求头中的ETag。**
+
+### Session 与内存
+如果直接将Session数据存在变量sessions中，那么它位于内存中，这样会带来两个问题：
+- 如果用户增多，很可能就接触到了内存限制的上限，并且内存中的数据量加大，必然会引起垃圾回收的频繁扫描，引起性能问题 
+- 用户请求的连接将可能随意分配到各个进程中，Node的进程与进程之间是不能直接共享内存的，用户的Session可能会引起错乱。
+
+为了解决这种问题，常用的方案是将Session集中化，将原本可能分散在多个进程中的数据统一转移到集中的数据存储中，目前常用的工具是**Redis**。
+
+### Session 安全
+无论是通过Cookie，还是查询字符串的实现方式，Session 的口令依然保存在客户端，这里会存在口令被盗用的风险
+
+如果Web应用的用户足够多，甚至自行设计的随机算法的一些口令值都会有理论命中的风险。
+
+最简单有效的一种方法就是提高伪造成本：将口令进行私钥加密。客户端可以伪造口令值，但是由于不知道私钥值，签名信息很难伪造。只需要在响应时将口令和签名进行对比，如果签名非法，立即将数据过期：
+```ts
+// 将值通过私钥签名，由.分割原值和签名
+var sign = function (val, secret) {
+ return val + '.' + crypto
+ .createHmac('sha256', secret)
+ .update(val)
+ .digest('base64')
+ .replace(/\=+$/, '');
+}; 
+
+// 在响应时，设置session值到Cookie中或者跳转URL中
+var val = sign(req.sessionID, secret);
+res.setHeader('Set-Cookie', cookie.serialize(key, val)); 
+
+// 取出口令部分进行签名，对比用户提交的值
+var unsign = function (val, secret) {
+ var str = val.slice(0, val.lastIndexOf('.'));
+ return sign(str, secret) == val ? str : false;
+}; 
+```
+这种方案已经足够好了，但是窃取者仍有一些途径获取到了真实的口令和签名，那么他依然可以进行伪装。应对这种情况，可以将客户端的某些独有信息（用户IP）作为独有的信息与口令作为原始值进行签名，一旦窃取者不在原始的客户端上进行访问，就会让签名失败。
+
+## 数据上传
+在业务中，还需要处理一些数据，比如表单提交，文件提交，JSON上传，XML上传等。
+|文件格式|Content-Type|
+|------|------|
+|表单数据|application/x-www-form-urlencoded|
+|JSON|application/json|
+|xml|application/xml|
+|附件|multipart/form-data|
+
+## MVC
+MVC模型的主要思想是将业务逻辑按照职责分离，主要分为以下几种：
+- 控制器 Controller，一组行为的集合
+- 模型 Model，数据相关的操作和封装
+- 视图 View，视图渲染
+这是目前最为经典的分层模式，大致而言，工作模式如下：
+- 路由解析，根据URL去找到对应的控制器行为
+- 行为调用相关模型，进行数据操作
+- 数据操作结束后，调用视图和相关数据对页面进行渲染，输出到客户端
+
+通过URL做路由映射，主要有两个分支实现，一种是通过手工关联映射，一种是自然关联映射。
+
+### 手工映射
+手工关联引射，会有一个对应的路由文件来将URL映射到对应的控制器。
+![image](./assets/%E6%89%8B%E5%B7%A5%E6%98%A0%E5%B0%84.png)
+
+手工映射除了需要手工配置路由外较为原始外，它对URL的要求十分灵活，几乎没有格式上的限制。
+
+假设有如下的URL格式，都能自由映射
+```js
+/user/setting
+/setting/user
+```
+假设已经拥有一个处理设置用户信息的控制器
+```js
+exports.setting = function(req,res){
+  //todo...
+}
+```
+再添加一个映射的方法就行，假设这个方法名为`use`
+```js
+var routes = []
+var use = function(path,action){
+  routes.push([path,action])
+}
+```
+在入口程序中判断URL，然后执行对应的逻辑，就可以完成基本的路由映射过程
+```js
+function (req, res) {
+   var pathname = url.parse(req.url).pathname;
+   for (var i = 0; i < routes.length; i++) {
+     var route = routes[i];
+     if (pathname === route[0]) {
+       var action = route[1];
+       action(req, res);
+       return;
+     }
+   }
+   // 处理404请求
+   handle404(req, res);
+} 
+```
+手工映射灵活处就在这里，可以将两个路径都映射到相同的业务逻辑
+```js
+use('/user/setting', exports.setting);
+use('/setting/user', exports.setting); 
+```
+### 自然映射
+手工映射的优点在于路径可以很灵活，但是如果项目变大，路由映射的数量也会变多。
+
+而自然映射则通过按一种约定的方式自然而然地实现路由，而不用去维护路由映射。
+
+它将如下路径进行了划分处理`/controller/action/param1/param2/param3`
+
+假设以`/user/settinf/12/1987`为例，就会按照约定去找controllers目录下的user文件，将其require出来后，调用这个文件模块的setting方法，而其余的值作为参数直接传递给这个方法。
+```js
+function (req, res) {
+ var pathname = url.parse(req.url).pathname;
+ var paths = pathname.split('/');
+ var controller = paths[1] || 'index';
+ var action = paths[2] || 'index';
+ var args = paths.slice(3);
+ var module; 
+ try {
+ 		// require的缓存机制使得只有第一次是阻塞的
+ 		module = require('./controllers/' + controller);
+ } catch (ex) {
+	 handle500(req, res);
+ 	 return;
+ }
+ var method = module[action]
+ if (method) {
+ 	method.apply(null, [req, res].concat(args));
+ } else {
+ 	handle500(req, res);
+ }
+} 
+```
+## RESTful
+REST的全称是**Representational State Transfer**，意思是表现层状态转化。
+
+它的设计原理是要将服务器端提供的内容实体看作一个资源，并表现在HTTP请求方法上
+
+```
+POST /user/jacksontian
+DELETE /user/jacksontian
+PUT /user/jacksontian
+GET /user/jacksontian
+```
+在RESTful设计中，资源的具体格式由请求报头中的Accept字段和服务器端的支持请求来决定。如果客户端同时接受JSON和XML格式的响应，那它的字段是 `Accept: application/json,application/xml`
+
+靠谱的服务器端也会告知客户端返回的资源是什么格式`Content-Type:application/json`
+
+所以RESTful的设计原则就是：通过URL设计资源，请求方法定义资源的操作，通过Accept决定资源的表现形式。
+
+## 中间件设计
+从HTTP请求到具体业务逻辑之间，其实有很多的细节要处理 。
+
+Node的http 模块提供了应用层协议网络的封装，对具体业务并没有支持，在业务逻辑之下，必须有开发框架 对业务提供支持。
+
+这就需要通过中间件的形式搭建开发框架，这个开发框架用来组织各个中间件。 对于Web应用的各种基础功能，我们通过中间件来完成，每个中间件处理掉相对简单的逻辑，最终汇成强大的基础框架。
+
+:::tip
+从获取一个请求，需要经过许多细节性处理：解析query，声明路由，解析Cookie等等...
+:::
+
+中间件必要的上下文也就是请求对象和响应对象 ：并且提供一种机制，在当前中间件处理完成 后，通知下一个中间件执行 ，依然通过**尾触发**来实现
+
+基本形式如下：
+```js
+var middleware = function(req, res, next){
+  next()
+}
+```
+![image](./assets/%E4%B8%AD%E9%97%B4%E4%BB%B6%E8%AE%BE%E8%AE%A1.png)
+
+通过框架支持，可以将所有所有的基础功能支持串联起来，如下所示：
+`app.use('/user/:username', querystring, cookie, session, function(req,res){//todo})`
+
+这里的`querystring`,`cookie`,`session`中间件基本上就是负责解析参数 解析cookie 存session这样的操作
+```js
+const querystring = function(req,res,next){
+  //...
+  next()
+}
+
+const cookie = function(req,res,next){
+  //...
+  next()
+}
+
+app.use = function(path){
+  const handle = {
+    path:pathRegexp(path),
+    stack:Array.prototype.slice.call(arguments,1)
+  }
+  routes.all.push(handle)
+}
+```
+`use`方法将中间件都存进了stack数组中保存，等待匹配后触发执行。
+
+一旦匹配成功，中间件具体如何调动都交给了`handle()`方法处理，该方法封装后，递归性地执行数组中的中间件，每个中间件执行完成后，按照约定调用传入的`next`方法来触发下一个中间价的执行，直到最后的业务逻辑
+```js
+var handle = function (req, res, stack) { 
+   var next = function () { 
+     // 从stack数组中取出中间件并执行
+     var middleware = stack.shift(); 
+      if (middleware) { 
+         // 传入next()函数自身，使中间件能够执行结束后递归
+         middleware(req, res, next); 
+      } 
+   }; 
+   // 启动执行
+   next(); 
+}; 
+```
+通过中间件强大的组织能力，可以发现业务逻辑其实是在最后才执行的。为了用户体验，应该尽早执行业务逻辑，把响应返回给终端用户。需要从两个点去优化：
+
+- 编写高效的中间件
+不要再中间件内部去做很耗时的任务，导致`next`的调用被后放了。需要知道一旦中间件被匹配了，那么每个请求都会被该中间件执行一次。优化方法有：缓存一些计算的结果，避免不必要的操作，比如HTTP报文解析，对于GET方法就是不被需要的
+
+- 合适使用路由
+在一堆高效的中间件，并不意味着这些中间件每个都该使用，合理的路由应该不让一些中间件来参与请求处理。假设一个静态文件的中间件，它会对请求进行判断，如果磁盘上存在对应文件，就响应对应的静态文件，否则就交给下游的中间件来处理：
+```js
+var staticFile = function (req, res, next) {
+   var pathname = url.parse(req.url).pathname;
+     fs.readFile(path.join(ROOT, pathname), function (err, file) {
+     if (err) {
+       return next();
+     }
+     res.writeHead(200);
+     res.end(file);
+   });
+}; 
+
+app.use(staticFile)
+```
+这样导致所有路由下的url都会进行判断来匹配文件，需要优化的是提升匹配成功率，那么就不能使用默认的/路径来进行匹配了，给它添加一个更好的路由路径才是比较好的选择：
+```js
+app.use('/public',staticFile)
+```

@@ -77,7 +77,8 @@ export default defineConfig({
                 {text:"构建工具的优化",link:'/performance-docs/foundation/构建工具的优化.md'},
                 {text:'图片的优化',link:'/performance-docs/foundation/图片的优化.md'},
                 {text:'浏览器缓存优化',link:'/performance-docs/foundation/浏览器缓存.md'},
-                {text:'本地缓存优化',link:'/performance-docs/foundation/本地缓存优化.md'}
+                {text:'本地缓存优化',link:'/performance-docs/foundation/本地缓存优化.md'},
+                {text:'CDN',link:'/performance-docs/foundation/CDN.md'}
               ]
             }
           ]

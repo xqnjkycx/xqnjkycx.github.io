@@ -78,7 +78,8 @@ export default defineConfig({
                 {text:'图片的优化',link:'/performance-docs/foundation/图片的优化.md'},
                 {text:'浏览器缓存优化',link:'/performance-docs/foundation/浏览器缓存.md'},
                 {text:'本地缓存优化',link:'/performance-docs/foundation/本地缓存优化.md'},
-                {text:'CDN',link:'/performance-docs/foundation/CDN.md'}
+                {text:'CDN',link:'/performance-docs/foundation/CDN.md'},
+                {text:'服务端渲染',link:'/performance-docs/foundation/服务端渲染.md'}
               ]
             }
           ]
@@ -117,7 +118,7 @@ export default defineConfig({
         }
       ],
       '/javascript-docs/javascript-advanced/':[
-        {
+        { 
           items:[
             {
               text:'开篇',

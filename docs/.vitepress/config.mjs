@@ -22,8 +22,17 @@ export default defineConfig({
           }
         ]
       }, {
-        text: 'NodeJS笔记',
-        link: '/nodejs-docs/深入浅出NodeJS'
+        text: 'NodeJS',
+        items:[
+          {
+            text:'深入浅出NodeJS',
+            link: '/nodejs-docs/深入浅出NodeJS'
+          },{
+            text:'趣学NodeJS',
+            link:'/nodejs-docs/interest-NodeJS/事件循环与异步IO'
+          }
+        ]
+        
       }, {
         text: 'JavaScript',
         items: [
@@ -314,7 +323,18 @@ export default defineConfig({
             link: 'internet-docs/internet/apply.md'
           },
         ]
-      }]
+      }],
+      'nodejs-docs/interest-NodeJS':[
+        {
+          text:'趣学NodeJS',
+          items:[
+            {
+              text:'事件循环与异步IO',
+              link:'/nodejs-docs/interest-NodeJS/事件循环与异步IO'
+            }
+          ]
+        }
+      ]
     },
     footer: {
       message: '冷的咖啡，我庆幸着，你在续杯',

@@ -89,7 +89,8 @@ export default defineConfig({
                 {text:'本地缓存优化',link:'/performance-docs/foundation/本地缓存优化.md'},
                 {text:'CDN',link:'/performance-docs/foundation/CDN.md'},
                 {text:'服务端渲染',link:'/performance-docs/foundation/服务端渲染.md'},
-                {text:'加载顺序优化',link:'/performance-docs/foundation/加载顺序优化.md'}
+                {text:'加载顺序优化',link:'/performance-docs/foundation/加载顺序优化.md'},
+                {text:'回流重绘的优化',link:'/performance-docs/foundation/回流重绘的优化.md'}
               ]
             }
           ]
@@ -332,6 +333,9 @@ export default defineConfig({
             {
               text:'事件循环与异步IO',
               link:'/nodejs-docs/interest-NodeJS/事件循环与异步IO'
+            },{
+              text:'CJS与ESM',
+              link:'/nodejs-docs/interest-NodeJS/CJS和ESM'
             }
           ]
         }

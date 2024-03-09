@@ -90,7 +90,9 @@ export default defineConfig({
                 {text:'CDN',link:'/performance-docs/foundation/CDN.md'},
                 {text:'服务端渲染',link:'/performance-docs/foundation/服务端渲染.md'},
                 {text:'加载顺序优化',link:'/performance-docs/foundation/加载顺序优化.md'},
-                {text:'回流重绘的优化',link:'/performance-docs/foundation/回流重绘的优化.md'}
+                {text:'回流重绘的优化',link:'/performance-docs/foundation/回流重绘的优化.md'},
+                {text:'操作频率的优化',link:'/performance-docs/foundation/操作频率的优化.md'},
+                {text:'渲染时机的优化',link:'/performance-docs/foundation/渲染时机的优化.md'}
               ]
             }
           ]

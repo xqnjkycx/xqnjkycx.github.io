@@ -338,6 +338,9 @@ export default defineConfig({
             },{
               text:'CJS与ESM',
               link:'/nodejs-docs/interest-NodeJS/CJS和ESM'
+            },{
+              text:'NPM与包',
+              link:'/nodejs-docs/interest-NodeJS/NPM与包'
             }
           ]
         }

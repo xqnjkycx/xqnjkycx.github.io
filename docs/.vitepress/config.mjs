@@ -92,7 +92,9 @@ export default defineConfig({
                 {text:'加载顺序优化',link:'/performance-docs/foundation/加载顺序优化.md'},
                 {text:'回流重绘的优化',link:'/performance-docs/foundation/回流重绘的优化.md'},
                 {text:'操作频率的优化',link:'/performance-docs/foundation/操作频率的优化.md'},
-                {text:'渲染时机的优化',link:'/performance-docs/foundation/渲染时机的优化.md'}
+                {text:'渲染时机的优化',link:'/performance-docs/foundation/渲染时机的优化.md'},
+                {text:'密集任务优化',link:'/performance-docs/foundation/密集任务优化.md'},
+                {text:'懒加载优化',link:'/performance-docs/foundation/懒加载优化.md'}
               ]
             }
           ]

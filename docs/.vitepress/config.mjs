@@ -10,7 +10,8 @@ export default defineConfig({
     logo: '/logo.png',
     nav: [
       { text: '主页', link: '/' },
-      { text: 'TypeScript笔记', link: '/typescript-docs/基础类型' }, {
+      { text: 'TypeScript笔记', link: '/typescript-docs/基础类型' }, 
+      {
         text: '性能优化',
         items: [
           {
@@ -18,7 +19,7 @@ export default defineConfig({
             link:'/performance-docs/foundation/index'
           },{
             text:'性能优化进阶',
-            link:'/performance-docs/advanced/index'
+            link:'/performance-docs/advanced/优化指标.md'
           }
         ]
       }, {
@@ -104,10 +105,7 @@ export default defineConfig({
         {
           items:[
             {
-              items:[
-                {text:'入门',link:'/performance/advanced/index.md'},
-                
-              ]
+              text:'性能优化指标',link:'/performance-docs/advanced/优化指标.md'
             }
           ]
         }

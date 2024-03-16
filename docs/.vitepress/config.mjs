@@ -19,7 +19,7 @@ export default defineConfig({
             link:'/performance-docs/foundation/index'
           },{
             text:'性能优化进阶',
-            link:'/performance-docs/advanced/优化指标.md'
+            link:'/performance-docs/advanced/web-vitals.md'
           }
         ]
       }, {
@@ -105,7 +105,10 @@ export default defineConfig({
         {
           items:[
             {
-              text:'性能优化指标',link:'/performance-docs/advanced/优化指标.md'
+              text:'web-vitals',link:'/performance-docs/advanced/web-vitals.md'
+            },
+            {
+              text:'Performance API',link:'/performance-docs/advanced/Performance-API.md'
             }
           ]
         }

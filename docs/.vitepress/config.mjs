@@ -111,6 +111,8 @@ export default defineConfig({
               text:'Performance API',link:'/performance-docs/advanced/Performance-API.md'
             },{
               text:'资源优先级优化',link:'/performance-docs/advanced/资源优先级优化.md'
+            },{
+              text:'CDN优化实践',link:'/performance-docs/advanced/CDN.md'
             }
           ]
         }

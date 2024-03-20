@@ -113,6 +113,8 @@ export default defineConfig({
               text:'资源优先级优化',link:'/performance-docs/advanced/资源优先级优化.md'
             },{
               text:'CDN优化实践',link:'/performance-docs/advanced/CDN.md'
+            },{
+              text:'Lazy Load',link:'/performance-docs/advanced/lazyload.md'
             }
           ]
         }

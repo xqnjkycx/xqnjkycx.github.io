@@ -115,6 +115,8 @@ export default defineConfig({
               text:'CDN优化实践',link:'/performance-docs/advanced/CDN.md'
             },{
               text:'Lazy Load',link:'/performance-docs/advanced/lazyload.md'
+            },{
+              text:'Code Split',link:'/performance-docs/advanced/CodeSplit.md'
             }
           ]
         }

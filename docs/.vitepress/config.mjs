@@ -228,6 +228,15 @@ export default defineConfig({
           ]
         }
       ],
+      '/javascript-docs/javascript-functional':[
+        {
+          text: '函数式编程',
+          link: '/javascript-docs/javascript-functional/index'
+        },{
+          text:'纯函数与副作用',
+          link:'/javascript-docs/javascript-functional/pure'
+        }
+      ],
       '/bundle-tool-docs/vite/': [
         {
           text: 'vite学习笔记',

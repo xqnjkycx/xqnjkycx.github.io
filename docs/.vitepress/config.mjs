@@ -117,6 +117,12 @@ export default defineConfig({
               text:'Lazy Load',link:'/performance-docs/advanced/lazyload.md'
             },{
               text:'Code Split',link:'/performance-docs/advanced/CodeSplit.md'
+            },{
+              text:'图片体积优化',link:'/performance-docs/advanced/图片体积优化.md'
+            },{
+              text:'资源懒加载',link:'/performance-docs/advanced/资源懒加载.md'
+            },{
+              text:'CSS代码优化',link:'/performance-docs/advanced/CSS代码优化.md'
             }
           ]
         }

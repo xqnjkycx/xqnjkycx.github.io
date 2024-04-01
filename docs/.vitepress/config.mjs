@@ -53,7 +53,7 @@ export default defineConfig({
             link: '/vue-docs/skills/如何写好组件和hook.md'
           }, {
             text: 'Vue原理',
-            link: '/bundle-tool-docs/vite/index'
+            link: '/vue-docs/principle/响应式系统设计.md'
           }
         ]
       }, 
@@ -340,7 +340,38 @@ export default defineConfig({
           },
         ]
       }
-
+      ],
+      '/vue-docs/principle':[{
+        text:'响应式',
+        items: [
+          {
+            text:'响应式系统设计',
+            link:'/vue-docs/principle/响应式系统设计.md'
+          },
+          {
+            text:'非原始值的响应方案',
+            link:'/vue-docs/principle/非原始值的实现方案.md'
+          },{
+            text:'computed实现原理',
+            link:'/vue-docs/principle/computed实现原理.md'
+          },
+          {
+            text:'watch实现原理',
+            link:'/vue-docs/principle/watch实现原理.md'
+          },{
+            text:'非原始值的响应方案',
+            link:'/vue-docs/principle/非原始值的响应方案'
+          }
+        ]
+      },{
+        text:'Vue原理',
+        items: [
+          {
+            text:'如何写好组件和hooks',
+            link:'/vue-docs/skills/如何写好组件和hook.md'
+          },
+        ]
+      }
       ],
       '/internet-docs/internet/':[{
         text:'计算机网络',

@@ -349,18 +349,19 @@ export default defineConfig({
             link:'/vue-docs/principle/响应式系统设计.md'
           },
           {
-            text:'非原始值的响应方案',
-            link:'/vue-docs/principle/非原始值的实现方案.md'
-          },{
             text:'computed实现原理',
             link:'/vue-docs/principle/computed实现原理.md'
           },
           {
             text:'watch实现原理',
             link:'/vue-docs/principle/watch实现原理.md'
-          },{
+          },
+          {
             text:'非原始值的响应方案',
-            link:'/vue-docs/principle/非原始值的响应方案'
+            link:'/vue-docs/principle/非原始值的响应方案.md'
+          },{
+            text:'原始值的响应方案',
+            link:'/vue-docs/principle/原始值的响应方案'
           }
         ]
       },{

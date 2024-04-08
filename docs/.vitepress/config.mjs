@@ -368,8 +368,8 @@ export default defineConfig({
         text:'Vue原理',
         items: [
           {
-            text:'如何写好组件和hooks',
-            link:'/vue-docs/skills/如何写好组件和hook.md'
+            text:'渲染器',
+            link:'/vue-docs/principle/渲染器设计.md'
           },
         ]
       }

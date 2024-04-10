@@ -371,6 +371,13 @@ export default defineConfig({
             text:'渲染器',
             link:'/vue-docs/principle/渲染器设计.md'
           },
+          {
+            text:'挂载与更新',
+            link:'/vue-docs/principle/挂载与更新.md'
+          },{
+            text:'简单Diff',
+            link:'/vue-docs/principle/简单Diff.md'
+          }
         ]
       }
       ],

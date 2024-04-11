@@ -377,6 +377,9 @@ export default defineConfig({
           },{
             text:'简单Diff',
             link:'/vue-docs/principle/简单Diff.md'
+          },{
+            text:'双端Diff',
+            link:'/vue-docs/principle/双端Diff.md'
           }
         ]
       }

@@ -380,6 +380,9 @@ export default defineConfig({
           },{
             text:'双端Diff',
             link:'/vue-docs/principle/双端Diff.md'
+          },{
+            text:'快速Diff',
+            link:'/vue-docs/principle/快速Diff.md'
           }
         ]
       }

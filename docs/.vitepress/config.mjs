@@ -365,7 +365,7 @@ export default defineConfig({
           }
         ]
       },{
-        text:'Vue原理',
+        text:'渲染原理',
         items: [
           {
             text:'渲染器',
@@ -383,6 +383,17 @@ export default defineConfig({
           },{
             text:'快速Diff',
             link:'/vue-docs/principle/快速Diff.md'
+          }
+        ]
+      },{
+        text:'组件化原理',
+        items:[
+          {
+            text:'组件的实现原理',
+            link:'/vue-docs/principle/组件的实现原理.md'
+          },{
+            text:'异步组件',
+            link:'/vue-docs/principle/异步组件.md'
           }
         ]
       }

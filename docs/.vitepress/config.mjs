@@ -394,6 +394,12 @@ export default defineConfig({
           },{
             text:'异步组件',
             link:'/vue-docs/principle/异步组件.md'
+          },{
+            text:'KeepAlive组件',
+            link:'/vue-docs/principle/KeepAlive组件.md'
+          },{
+            text:'Teleport组件',
+            link:'/vue-docs/principle/Teleport组件.md'
           }
         ]
       }

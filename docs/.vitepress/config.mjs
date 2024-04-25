@@ -335,9 +335,28 @@ export default defineConfig({
         text:'Vue技巧',
         items: [
           {
+            text:'Vue项目结构划分',
+            link:'/vue-docs/skills/Vue项目结构划分.md'
+          },
+          {
             text:'如何写好组件和hooks',
             link:'/vue-docs/skills/如何写好组件和hook.md'
-          },
+          },{
+            text:'递归组件',
+            link:'/vue-docs/skills/递归组件.md'
+          },{
+            text:'利用好Teleport组件',
+            link:'/vue-docs/skills/利用好Teleport组件.md'
+          },{
+            text:'v-if与v-for拒绝同时使用',
+            link:'/vue-docs/skills/v-if与v-for拒绝同时使用.md'
+          },{
+            text:'v-if与v-show',
+            link:'/vue-docs/skills/v-if与v-show.md'
+          },{
+            text:'组件间通信',
+            link:'/vue-docs/skills/组件间通信.md'
+          }
         ]
       }
       ],
@@ -400,6 +419,17 @@ export default defineConfig({
           },{
             text:'Teleport组件',
             link:'/vue-docs/principle/Teleport组件.md'
+          }
+        ]
+      },{
+        text:'编译器',
+        items:[
+          {
+            text:'模板编译器',
+            link:'/vue-docs/principle/模板编译器.md'
+          },{
+            text:'编译优化',
+            link:'/vue-docs/principle/编译优化.md'
           }
         ]
       }

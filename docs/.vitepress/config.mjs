@@ -54,6 +54,9 @@ export default defineConfig({
           }, {
             text: 'Vue原理',
             link: '/vue-docs/principle/响应式系统设计.md'
+          },{
+            text:'Pinia',
+            link:'/vue-docs/pinia.md'
           }
         ]
       }, 
@@ -61,7 +64,7 @@ export default defineConfig({
         text: '构建工具', items: [
           {
             text: 'Vite',
-            link: '/bundle-tool-docs/vite/index'
+            link: '/bundle-tool-docs/vite/esm'
           }, {
             text: 'Webpack',
             link: '/bundle-tool-docs/webpack/index'
@@ -248,8 +251,14 @@ export default defineConfig({
           text: 'vite学习笔记',
           items: [
             {
-              text: 'vite',
-              link: '/bundle-tool-docs/vite/index'
+              text: 'esm前端模块化的未来',
+              link: '/bundle-tool-docs/vite/esm.md'
+            },{
+              text:'初识Vite项目',
+              link:'/bundle-tool-docs/vite/初识Vite项目'
+            },{
+              text:'Vite中的Css',
+              link:'/bundle-tool-docs/vite/Vite中的Css'
             }
           ]
         }

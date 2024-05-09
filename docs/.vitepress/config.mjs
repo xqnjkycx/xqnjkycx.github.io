@@ -259,6 +259,16 @@ export default defineConfig({
             },{
               text:'Vite中的Css',
               link:'/bundle-tool-docs/vite/Vite中的Css'
+            },
+            {
+              text:'Vite处理静态资源',
+              link:'/bundle-tool-docs/vite/Vite处理静态资源.md'
+            },{
+              text:'依赖预构建',
+              link:'/bundle-tool-docs/vite/依赖预构建.md'
+            },{
+              text:'双引擎架构',
+              link:'/bundle-tool-docs/vite/双引擎架构.md'
             }
           ]
         }

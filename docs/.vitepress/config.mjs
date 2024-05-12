@@ -269,6 +269,20 @@ export default defineConfig({
             },{
               text:'双引擎架构',
               link:'/bundle-tool-docs/vite/双引擎架构.md'
+            },{
+              text:'Esbuild功能与插件开发',
+              link:'/bundle-tool-docs/vite/Esbuild功能与插件开发.md'
+            },
+            {
+              text:'Rollup打包',
+              link:'/bundle-tool-docs/vite/Rollup打包.md'
+            },
+            {
+              text:'Rollup构建机制',
+              link:'/bundle-tool-docs/vite/Rollup构建机制.md'
+            },{
+              text:'Vite插件机制与开发',
+              link:'/bundle-tool-docs/vite/Vite插件机制与开发.md'
             }
           ]
         }

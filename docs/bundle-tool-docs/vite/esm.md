@@ -183,3 +183,157 @@ export { methodA };
 然后Node.js便会默认以ESM的规范解析模块.
 
 同时，ES Module 作为 ECMAScript 官方提出的规范，经过五年多的发展，不仅得到了众多浏览器的原生支持，也在 Node.js 中得到了原生支持，是一个能够跨平台的模块规范。同时，它也是社区各种生态库的发展趋势，尤其是被如今大火的构建工具 Vite 所深度应用。可以说，ES Module 前景一片光明，成为前端大一统的模块标准指日可待。
+
+## ESM进阶
+### import map
+在浏览器中可以使用包含`type=“module”`属性的`script`标签来加载ES模块，而模块路径主要包含三种：
+- 绝对路径，如：`https://cdn.skypack.dev/react`
+- 相对路径，如：`./module-a`
+- `bare import`，直接写一个第三方包名，如`react`,`lodash`
+
+对于前两种模块路径浏览器是原生支持的，而对于`bare import`，在Node.js中可以直接进行，因为Node.js解析算法会从项目中的`node_modules`找到第三方包的模块路径，但是放在浏览器中就无法直接进行了。
+
+而现代浏览器内置的`import map`就是为了解决这个问题，用一个简单的例子来说明：
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="importmap">
+  // 这是一个映射表
+  {
+    "imports": {
+      "react": "https://cdn.skypack.dev/react"
+    }
+  }
+  </script>
+
+  <script type="module">
+    import React from 'react';
+    console.log(React)
+  </script>
+</body>
+
+</html>
+```
+在支持`import map`的浏览器中，在遇到`type="importmap"`的script标签时，浏览器会记录下第三方包的路径映射表，在遇到`bare import`时会根据这张表去远程拉取代码
+
+`import map`的却点在于兼容性实在是一般般
+
+![image](./assets/import-bare.png)
+
+对于兼容性问题，社区里面也有对应的包来解决：[es-module-shims](https://github.com/guybedford/es-module-shims)
+
+这个包处理包含`import bare`之外，还聚合了各大ESM特性，其中包括但不限于：
+- `dynamic import`。即动态导入
+- `import.meta`和`import.meta.url`。当前模块的元信息，类似于NodeJS的`__dirname`,`__filename`
+- `modulepreload`。在link标签上加入`rel="preload"`来进行资源预加载，即在浏览器解析HTML之前就开始加载资源，现在对于ESM也有对应的`modulepreload`来支持这个行为
+- `JSON Modules`和`CSS Modules`，即通过下面的方式引入`json`和`css`：
+```html
+<script type="module">
+// 获取 json 对象
+import json from 'https://site.com/data.json' assert { type: 'json' };
+// 获取 CSS Modules 对象
+import sheet from 'https://site.com/sheet.css' assert { type: 'css' };
+</script>
+```
+:::tip
+**GPT4 是这么解释的:**
+"bare import" 是一种 JavaScript 模块导入语法，通常在 ES6 模块或 Node.js 中使用。它指的是在 import 语句中直接使用模块名，而不是使用相对或绝对路径。
+
+这种导入方式的工作原理取决于你的 JavaScript 运行环境。在 Node.js 中，当你使用 bare import，Node 会查找 node_modules 目录（或者其他在 NODE_PATH 环境变量中指定的目录）来找到对应的模块。
+
+在浏览器中，原生的 ES6 模块不支持 bare import，必须使用相对或绝对 URL。但是，很多现代 JavaScript 构建工具，如 webpack、Rollup 或 Snowpack，都支持在浏览器中使用 bare import。这些工具在构建过程中会将 bare import 解析为实际的文件路径。
+
+总的来说，bare import 是一个方便的方式来导入模块，但是它的行为会根据你的运行环境和使用的工具有所不同。
+:::
+
+### NodeJS包导入导出策略
+在NodeJS中一般有两种方式可以使用原生的ES Module：
+- 文件以`.mjs`结尾
+- package.json中声明`type:"module"`
+
+在Nodejs处理 ES Module 导入导出的时候，如果是处理 npm 包级别的情况，其中的细节比较复杂。
+
+如果要导出一个包，分别是`main`和`exports`属性，这两个属性都来自于`package.json`，并且根据Node官方的resolve算法，`exports`的优先级比`main`更高，如果同时设置了这两个属性，那么exports的优先级会更高
+
+`main`的使用比较简单，设置包的入口文件路径即可，如：
+```js
+"main":"./dist/index.js"
+```
+重点在于`exports`属性，它包含了多种导出形式：**默认导出**，**子路径导出**，**条件导出**，这些导出形式如下：
+```json
+// package.json
+{
+  "name": "package-a",
+  "type": "module",
+  "exports": {
+    // 默认导出，使用方式: import a from 'package-a'
+    ".": "./dist/index.js",
+    // 子路径导出，使用方式: import d from 'package-a/dist'
+    "./dist": "./dist/index.js",
+    "./dist/*": "./dist/*", // 这里可以使用 `*` 导出目录下所有的文件
+    // 条件导出，区分 ESM 和 CommonJS 引入的情况
+    "./main": {
+      "import": "./main.js",
+      "require": "./main.cjs"
+    },
+  }
+}
+
+```
+对于**条件导出**这种情况，可以定义为嵌套条件导出，如：
+```json
+{
+  "exports": {
+    {
+      ".": {
+       "node": {
+         "import": "./main.js",
+         "require": "./main.cjs"
+        }     
+      }
+    }
+  },
+}
+```
+- `import`:用于 import 方式导入的情况，如`import("package-a")`
+- `require`: 用于 require 方式导入的情况，如`require("package-a")`
+- `default`:兜底方案，如果前面的条件都没命中，则使用 default 导出的路径
+
+如果要导入相关的包，也就是在`package.json`中的`imports`字段，一般是这样声明的:
+```json
+{
+  "imports": {
+    // key 一般以 # 开头
+    // 也可以直接赋值为一个字符串: "#dep": "lodash-es"
+    "#dep": {
+      "node": "lodash-es",
+      "default": "./dep-polyfill.js"
+    },
+  },
+  "dependencies": {
+    "lodash-es": "^4.17.21"
+  }
+}
+```
+这样就可以直接在自己的包下面使用`import`的语句：
+```js
+// index.js
+import { cloneDeep } from "#dep";
+
+const obj = { a: 1 };
+
+// { a: 1 }
+console.log(cloneDeep(obj));
+```
+NodeJS在执行的时候会将`#dep`定位到`lodash-es`这个第三方包，当然，也可以将其定位到某个内部文件。这样相当于实现了 **路径别名** 的功能，不过与构建工具中的`alias`功能不同的在于，"imports" 中声明的别名必须全量匹配，否则Node.js会直接报错

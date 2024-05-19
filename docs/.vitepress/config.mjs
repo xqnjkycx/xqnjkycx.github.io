@@ -283,6 +283,19 @@ export default defineConfig({
             },{
               text:'Vite插件机制与开发',
               link:'/bundle-tool-docs/vite/Vite插件机制与开发.md'
+            },{
+              text:'HMR',
+              link:'/bundle-tool-docs/vite/HMR.md'
+            },{
+              text:'代码分割',
+              link:'/bundle-tool-docs/vite/代码分割.md'
+            },{
+              text:'Vite的降级处理',
+              link:'/bundle-tool-docs/vite/Vite的降级处理.md'
+            },
+            {
+              text:'Vite项目优化',
+              link:'/bundle-tool-docs/vite/Vite项目优化.md'
             }
           ]
         }
